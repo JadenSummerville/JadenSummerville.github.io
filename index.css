@@ -1,4 +1,9 @@
-#Rocko{
-    width: 7%;
-    height: 7%;
+body {
+    width: 100%;
+    height: 100%;
+}
+
+#me_0, #me_1, #me_2 {
+    width: 20vw;
+    height: 15vw;
 }
