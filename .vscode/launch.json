@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Launch LineSegment",
+            "request": "launch",
+            "mainClass": "projects.LineSegment",
+            "projectName": "JadenSummerville.github.io_d2e4bc68"
+        },
+        {
+            "type": "java",
             "name": "Launch Agent",
             "request": "launch",
             "mainClass": "projects.Agent",

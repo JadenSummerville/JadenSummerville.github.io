@@ -1,7 +1,11 @@
 package projects;
 
 import java.util.concurrent.ExecutionException;
-
+/**
+ * An Agent is mutable and has a location in a max and min range. The location must fall in the range.
+ * Agent has a velocity, level of friction, and max speed. Note that higher speed
+ * multipliers caused by low friction are taken into account.
+*/
 public class Agent {
     private double position_x;
     private double position_y;
