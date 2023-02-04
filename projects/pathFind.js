@@ -159,8 +159,8 @@ for(let i = 0; i < 100; i++){
 }
 console.log(a.position_x,a.position_y);
 */
-const agent = new Agent(1000*Math.random(), 500*Math.random(), 1000, 0, 500, 0, 0.99, 2);
-let aimX =1000*Math.random();
+const agent = new Agent(2000*Math.random(), 500*Math.random(), 2000, 0, 500, 0, 0.99, 2);
+let aimX =2000*Math.random();
 let aimY = 500*Math.random();
 function steps(){
     agent.move();
