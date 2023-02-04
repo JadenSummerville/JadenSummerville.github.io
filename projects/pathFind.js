@@ -157,14 +157,15 @@ for(let i = 0; i < 100; i++){
 }
 console.log(a.position_x,a.position_y);
 */
-const agent = new Agent(500, 500, 1000, 0, 1000, 0, 0.99, 2);
+const agent = new Agent(1000*Math.random(), 500*Math.random(), 1000, 0, 500, 0, 0.99, 2);
+let aimX =1000*Math.random();
+let aimY = 500*Math.random();
 function steps(){
     agent.move();
-    agent.aimAt(100,300);
+    agent.aimAt(aimX,aimY);
     document.getElementById("agent").style.top = agent.position_y+"px";
     document.getElementById("agent").style.left = agent.position_x+"px";
 }
 const interval = setInterval(function() {
     steps();
   }, 1);
- 
