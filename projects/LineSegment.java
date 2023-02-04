@@ -10,12 +10,12 @@ public class LineSegment {
     private final boolean tailInclusive;
     /**
      * Constructs a line segmant starting at 'start' and ending at 'end'.
-     * Both points must be 2 dimensional. Start inclusive, end exclusive.
+     * Both points must be 2 dimensional. Start inclusive and end exclusive.
      * 
      * @param start head point
      * @param end tail point
      * @throws IllegalArgumentException non-2 dimensional point inputs
-     * @spec.requires no NaN or null values or coordinates
+     * @spec.requires no NaN or null values or coordinates. No perfectly verticle LineSegments.
     */
     public LineSegment(double[] start, double[] end) throws IllegalArgumentException{
         if(start.length != 2 || end.length != 2){
@@ -33,7 +33,7 @@ public class LineSegment {
      * @param start head point
      * @param end tail point
      * @throws IllegalArgumentException non-2 dimensional point input
-     * @spec.requires no NaN or null values or coordinates
+     * @spec.requires no NaN or null values or coordinates. No perfectly verticle LineSegments.
     */
     public LineSegment(double[] start, double[] end, boolean headInclusive,
      boolean tailInclusive) throws IllegalArgumentException{
@@ -54,10 +54,10 @@ public class LineSegment {
         b[1] = 0;
         double[] c = new double[2];
         c[0] = 0;
-        c[1] = 0;
+        c[1] = 1;
         double[] d = new double[2];
-        d[0] = 0.1;
-        d[1] = 1;
+        d[0] = 0;
+        d[1] = 2;
         LineSegment x = new LineSegment(a, b, false, false);
         LineSegment y = new LineSegment(c, d, false, false);
         System.out.println(x.collision(y));
