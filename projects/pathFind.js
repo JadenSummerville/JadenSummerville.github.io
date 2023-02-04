@@ -87,6 +87,7 @@ class LineSegment {
   const y = new LineSegment(c, d, true, true);
   console.log(x.collision(y));
   */
+ /*
   class Agent {
     constructor(position_x, position_y, max_x, min_x, max_y, min_y, friction, speed) {
         if(position_x > max_x || position_x < min_x || position_y > max_y || position_y < min_y){
@@ -148,6 +149,7 @@ class LineSegment {
         }
     }
 }
+*/
 /*
 const a = new Agent(50, 50, 100, 0, 100, 0, 0.5, 2);
 for(let i = 0; i < 100; i++){
