@@ -1,3 +1,11 @@
+function drawLine(x1, y1, x2, y2) {
+    var canvas = document.getElementById('myCanvas');
+    var ctx = canvas.getContext('2d');
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+  }
 class LineSegment {
     constructor(start, end) {
       if (start.length !== 2 || end.length !== 2) {
@@ -171,3 +179,8 @@ function steps(){
 const interval = setInterval(function() {
     steps();
   }, 1);
+  
+
+  drawLine(930, 810, 300, 300);
+  drawLine(100, 100, 290, 10);
+  drawLine(0, 0, 50, 30);
