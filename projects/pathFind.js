@@ -6,6 +6,22 @@ function drawLine(x1, y1, x2, y2) {
     ctx.lineTo(x2, y2);
     ctx.stroke();
   }
+  function collisionAt(lineA, lineB) {
+    let A_slope = LineSegment.findSlope(lineA);
+    let B_slope = LineSegment.findSlope(lineB);
+    if (A_slope === B_slope) {
+      return null;
+    }
+    
+    let A_constant = lineA.headY() - A_slope * lineA.headX();
+    let B_constant = lineB.headY() - B_slope * lineB.headX();
+    
+    let collision = new Array(2);
+    collision[0] = (A_constant - B_constant) / (B_slope - A_slope);
+    collision[1] = A_slope * collision[0] + A_constant;
+    
+    return collision;
+  }
 class LineSegment {
     constructor(start, end) {
       if (start.length !== 2 || end.length !== 2) {
@@ -56,7 +72,13 @@ class LineSegment {
     collision(other) {
       return LineSegment.collision(this, other);
     }
-  
+    collisionAt(other) {
+      let goal = collisionAt(this, other);
+      return goal;
+    }
+    findSlope(){
+      return LineSegment.findSlope(this);
+    }
     static findSlope(line) {
       return (line.headY() - line.tailY()) / (line.headX() - line.tailX());
     }
@@ -76,26 +98,24 @@ class LineSegment {
     tailY() {
       return this.tail[1];
     }
-  }
-  class Pu {
-    constructor(a){
-        this.a=a;
+    magnitude() {
+      let x = this.headX() - this.tailX();
+      let y = this.headY() - this.tailY();
+      let magnitude = Math.sqrt(x * x + y * y);
+      return magnitude;
     }
-    A(){
-        return a;
+    clone() {
+      let pointA = [this.tailX(), this.tailY()];
+      let pointB = [this.headX(), this.headY()];
+      let new_wall = new LineSegment(pointB, pointA);
+      return new_wall;
+    }
+    draw(){
+      drawLine(this.headX(), this.headY(), this.tailX(), this.tailY());
     }
   }
-  /*
-  const a = [1, 0];
-  const b = [-1, 0];
-  const c = [0.1, 0];
-  const d = [0, 2];
-  const pu = new Pu(a);
-  const x = new LineSegment(pu.A(), b, false, false);
-  const y = new LineSegment(c, d, true, true);
-  console.log(x.collision(y));
-  */
- /*
+
+
   class Agent {
     constructor(position_x, position_y, max_x, min_x, max_y, min_y, friction, speed) {
         if(position_x > max_x || position_x < min_x || position_y > max_y || position_y < min_y){
@@ -122,7 +142,7 @@ class LineSegment {
         var x_V = x-this.position_x;
         var y_V = y-this.position_y;
         var hypotenus = Math.pow(x_V*x_V+y_V*y_V,.5);
-        if(hypotenus < 25){
+        if(hypotenus < 4){
             return;
         }
         this.velocity_x += x_V/hypotenus;
@@ -157,30 +177,433 @@ class LineSegment {
         }
     }
 }
-*/
-/*
-const a = new Agent(50, 50, 100, 0, 100, 0, 0.5, 2);
-for(let i = 0; i < 100; i++){
-    a.move();
-    a.aimAt(0,3);
-    console.log(`X:${a.position_x} Y:${a.position_y}`);
+
+
+
+  class ObstacleCourse {
+    constructor(coordinates){
+      this.walls=new Set();
+  }
+    addWall(wall){
+      let newWall = wall.clone();
+      this.walls.add(newWall);
+    }
+    collision(input) {
+      if (this.getCollision(input) === null) {
+        return false;
+      }
+      return true;
+    }
+    collisionAt(input){
+      var collision = this.getLineSegmentOfCollision(input);
+      if(collision == null){
+        return null;
+    }
+    return collision.collisionAt(input);
+    }
+    getCollision(input) {
+      for (let line of this.walls) {
+        if (line.collision(input)) {
+          return line;
+        }
+      }
+      return null;
+    }
+    getLineSegmentOfCollision(input) {
+      let minRange = -1;
+      let collision = null;
+      for (let line of this.walls) {
+        if (line.collision(input)) {
+          const c1 = line.collisionAt(input);
+          const c2 = [input.tailX(), input.tailY()];
+          const colide = new LineSegment(c1, c2);
+          const magnitude = colide.magnitude();
+          if (magnitude < minRange || minRange === -1) {
+            minRange = magnitude;
+            collision = line;
+          }
+        }
+      }
+      return collision;
+    }
+    draw(){
+      for (let wall of this.walls) {
+        wall.draw();
+      }
+    }
+  }
+
+
+
+  class TwoWayGraph {
+    constructor(lines, nodes) {
+      if (nodes.length < 2) {
+        throw new Error("Must have two or more nodes in array");
+      }
+      this.coordinates = new Map();
+      let arrayListLines = TwoWayGraph.doubleArrayToArrayList(lines);
+      this.obstacles = new ObstacleCourse();
+      for(var i = 0; i != arrayListLines.length; i+=2){
+        let tail = arrayListLines[i];
+        let head = arrayListLines[i+1];
+        let line = new LineSegment(head, tail);
+        this.obstacles.walls.add(line);
+    }
+      // Add every node to the graph
+      for (let i = 0; i < nodes.length; i++) {
+        const set = new Set();
+        this.coordinates.set(nodes[i].join(','), set);
+      }
+
+      // Add edges
+      const elements = [...this.coordinates.keys()];
+      for (const node1 of elements) {
+        for (const node2 of elements) {
+          if (node1 !== node2) {
+            const lineSegment = new LineSegment(
+              TwoWayGraph.convertArrayListToDoubleArray(node1.split(',').map(Number)),
+              TwoWayGraph.convertArrayListToDoubleArray(node2.split(',').map(Number))
+            );
+            
+            if (!this.obstacles.collision(lineSegment)) {
+              this.coordinates.get(node1).add(node2.split(',').map(Number));
+            }
+            this.checkRep();
+          }
+        }
+      }
+      this.checkRep();
+    }
+    checkRep(){
+      if(true){
+        for(const key of this.coordinates.keys()){
+          if(!typeof key === 'string'){
+            throw new Error("Non-string key");
+          }
+          if(!typeof this.coordinates.get(key) === 'set'){
+            throw new Error("String child");
+          }
+          for(const coord of this.coordinates.get(key)){
+            if(coord.length != 2){
+              throw new Error("Length not 2");
+            }
+          }
+        }
+      }
+    }
+    children(node) {
+      this.checkRep();
+      const goal = [];
+      const children = this.coordinates.get(node.join(','));
+      for (const child of children) {
+        goal.push(child);
+      }
+      this.checkRep();
+      return goal;
+    }
+    validNodes(point) {
+      this.checkRep();
+      const goal = [];
+      
+      for (const coordinate of this.coordinates.keys()) {
+        const line = new LineSegment(
+          this.convertArrayListToDoubleArray(point),
+          this.convertArrayListToDoubleArray(coordinate)
+        );
+        
+        if (!this.obstacles.collision(line)) {
+          goal.push(coordinate);
+        }
+      }
+      this.checkRep();
+      return goal;
+    }
+    FindPath(start, end) {
+      this.checkRep();
+      if (!this.coordinates.has(start.join(',')) || !this.coordinates.has(end.join(','))) {
+        throw new Error("Nodes not present in graph!");
+      }
+      const queue = new PriorityQueue();
+      // Initialize distances to all nodes as infinity, except for the starting node which is 0
+      const distances = {};
+      distances[start.join(',')] = 0;
+    
+      // Add the starting node to the queue with a priority of 0
+      queue.enqueue(start.join(','), 0);
+    
+      // Keep track of the previous node for each node, so we can reconstruct the shortest path at the end
+      const previous = {};
+    
+      // Loop until the queue is empty
+      while (!queue.isEmpty()) {
+        // Get the node with the highest priority (i.e. the node with the smallest distance from the start)
+        const current = queue.dequeue().element.split(',').map(Number);
+    
+        // If we've reached the end node, we're done
+        if (current[0] === end[0] && current[1] === end[1]) {
+          // Reconstruct the shortest path by following the previous pointers from the end to the start
+          const path = [end];
+          let node = end.join(',');
+          while (previous.hasOwnProperty(node)) {
+            path.unshift(previous[node]);
+            node = previous[node];
+          }
+          this.checkRep();
+          return path;
+        }
+    
+        // Loop over the child nodes of the current node
+        const children = this.children(current);
+        if (children) {
+          for (const child of children) {
+            // Calculate the distance from the start to the child node
+            const distance = distances[current.join(',')] + (new LineSegment(child, current)).magnitude();
+    
+            // If this is the first time we've seen this node, or if the distance from the start to the node is less than the current distance, update the distances and previous pointers
+            if (!distances.hasOwnProperty(child) || distance < distances[child]) {
+              distances[child] = distance;
+              previous[child] = current;
+              queue.enqueue(child.join(','), distance);
+            }
+          }
+        }
+      }
+      this.checkRep();
+      return null;
+    }
+    doubleArrayToArrayList(original) {
+      const goal = [];
+      for(let i = 0; i < original.length; i++) {
+        const coordinate = original[i];
+        const newCoordinate = TwoWayGraph.convertArrayListToDoubleArray(coordinate);
+        goal.push(newCoordinate);
+      }
+      return goal;
+    }
+    PathFind(start, end) {
+      this.checkRep();
+      if (JSON.stringify(start) === JSON.stringify(end)) {
+        return null;
+        }
+        const toRemove = new Set();
+        if (!this.coordinates.has(start)) {
+        this.addNode(start);
+        toRemove.add(start);
+        }
+        if (!this.coordinates.has(end)) {
+        this.addNode(end);
+        toRemove.add(end);
+        }
+        const goal = this.FindPath(start, end);
+        if (toRemove.has(start)) {
+        this.removeNode(start);
+        }
+        if (toRemove.has(end)) {
+        this.removeNode(end);
+        }
+        this.checkRep();
+        return goal;
+  }
+  static sort(point, data) {
+    const distanceComparator = (o1, o2) => {
+      const distance1 = Math.sqrt(Math.pow(o1[0] - point[0], 2) + Math.pow(o1[1] - point[1], 2));
+      const distance2 = Math.sqrt(Math.pow(o2[0] - point[0], 2) + Math.pow(o2[1] - point[1], 2));
+      return distance1 - distance2;
+    };
+    data.sort(distanceComparator);
+  }
+  draw() {
+    this.obstacles.draw();
+  }
+  static doubleArrayToArrayList(original) {
+    const goal = [];
+    for (let i = 0; i < original.length; i++) {
+        const coordinate = original[i];
+        const newCoordinate = TwoWayGraph.convertArrayListToDoubleArray(coordinate);
+        goal.push(newCoordinate);
+    }
+    return goal;
 }
-console.log(a.position_x,a.position_y);
-*/
+
+static convertArrayListToDoubleArray(original) {
+  let coordinates = new Array(2);
+  coordinates[0] = original[0];
+  coordinates[1] = original[1];
+  return coordinates;
+}
+removeNode(node) {
+  // Remove node from graph
+  let children = this.coordinates.get(node.join(','));
+  if (children == null) {
+      return false;
+  }
+  this.coordinates.delete(node.join(','));
+  // Remove node from children of other nodes
+  for (let parent of this.coordinates.keys()) {
+      this.coordinates.get(parent).delete(node);
+  }
+  return true;
+}
+addNode(node) {
+  this.checkRep();
+  if (node.length !== 2) {
+      throw new Error('node was not 2d!');
+  }
+  if (this.coordinates.has(node.join(','))) {
+    this.checkRep();
+      return false;
+  }
+  const childPoints = new Set();
+  this.coordinates.set(node.join(','), childPoints);
+  // For each node
+  for (const point of this.coordinates.keys()) {
+      // If there is line of sight
+      if(point.split(',').map(Number)[0] != node[0] && point.split(',').map(Number)[1] != node[1]){
+       if (this.lineOfSight(point.split(',').map(Number), node)) {
+          this.coordinates.get(point).add(node);
+          childPoints.add(point.split(',').map(Number));
+        }
+    }
+  }
+  this.checkRep();
+  return true;
+}
+lineOfSight(point1, point2) {
+  if (point1.length !== 2 || point2.length !== 2) {
+      throw new Error("All coordinates must be 2d.");
+  }
+  const line = new LineSegment(TwoWayGraph.convertArrayListToDoubleArray(point1), TwoWayGraph.convertArrayListToDoubleArray(point2));
+  return !this.obstacles.collision(line);
+}
+  }
+  class PriorityQueue {
+    constructor() {
+      this.items = [];
+    }
+  
+    enqueue(element, priority) {
+      const item = { element, priority };
+      let added = false;
+      for (let i = 0; i < this.items.length; i++) {
+        if (item.priority < this.items[i].priority) {
+          this.items.splice(i, 0, item);
+          added = true;
+          break;
+        }
+      }
+      if (!added) {
+        this.items.push(item);
+      }
+    }
+  
+    dequeue() {
+      if (this.isEmpty()) {
+        return null;
+      }
+      return this.items.shift();
+    }
+  
+    front() {
+      if (this.isEmpty()) {
+        return null;
+      }
+      return this.items[0];
+    }
+  
+    isEmpty() {
+      return this.items.length === 0;
+    }
+  
+    size() {
+      return this.items.length;
+    }
+  
+    print() {
+      for (let i = 0; i < this.items.length; i++) {
+        console.log(`${this.items[i].element} - ${this.items[i].priority}`);
+      }
+    }
+  }
+
+
+
+class SuperAgent {
+  constructor() {
+    this.agent = new Agent(150, 150, 1000, 0, 1000, 0, 0.5, 1);
+    this.path = null;
+
+    const lines = [
+      [59, 200],
+      [59.5, 100.01],[59, 300],
+      [59.5, 500.01],[59.5,100],[1000,100]
+    ];
+
+    const point1 = [0, 0];
+    const point2 = [1, 0];
+    const point3 = [59, 250];
+    const point4 = [10, 0];
+    const point5 = [-10, 0.5];
+    const startPoint = [-10.1, 0.5];
+    const endPoint = [1.1, 0.3];
+    const nodes = [point1, point2, point3, point5, point4];
+
+    this.graph = new TwoWayGraph(lines, nodes);
+  }
+
+  goTo(target) {
+    const start = [this.agent.position_x, this.agent.position_y];
+    this.path = this.graph.PathFind(start, target);
+  }
+
+  draw() {
+    this.graph.draw();
+  }
+
+  move() {
+    if (this.path === null) {
+      this.agent.move();
+      return;
+    }
+
+    const point = this.path[0];
+    this.agent.aimAt(point[0], point[1]);
+    this.agent.move();
+
+    const point2 = this.at();
+    const distance = new LineSegment(point, point2);
+
+    if (distance.magnitude() < 5) {
+      this.path.shift();
+    }
+
+    if (this.path.length === 0) {
+      this.path = null;
+    }
+  }
+
+  at() {
+    return [this.agent.position_x, this.agent.position_y];
+  }
+}
 const agent = new Agent(2000*Math.random(), 500*Math.random(), 2000, 0, 500, 0, 0.99, 2);
+
 let aimX =2000*Math.random();
 let aimY = 500*Math.random();
 function steps(){
-    agent.move();
-    agent.aimAt(aimX,aimY);
-    document.getElementById("agent").style.top = agent.position_y+"px";
-    document.getElementById("agent").style.left = agent.position_x+"px";
+    var canvas = document.getElementById("myCanvas");
+    a.move();
+    document.getElementById("agent").style.top = canvas.offsetTop+a.agent.position_y-10+"px";
+    document.getElementById("agent").style.left = canvas.offsetLeft+a.agent.position_x-10+"px";
 }
+
+
+const a = new SuperAgent();
+const target = [2.0, 6.0];
+a.goTo(target);
+a.draw();
+
 const interval = setInterval(function() {
     steps();
   }, 1);
-  
 
-  drawLine(930, 810, 300, 300);
-  drawLine(100, 100, 290, 10);
-  drawLine(0, 0, 50, 30);
+  const lines = [[0.51, 1.0], [0.5, 0.01]];

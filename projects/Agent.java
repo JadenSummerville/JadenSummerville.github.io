@@ -20,6 +20,8 @@ public class Agent {
 
     private final double friction;
     private final double speed;
+
+    private final boolean DEBUG = false;
     /**
      * Set agent position, speed, and friction
      * 
@@ -37,10 +39,10 @@ public class Agent {
     public Agent(double position_x, double position_y, double max_x, double min_x, double max_y, double min_y
     , double friction, double speed)throws ExecutionException, IllegalArgumentException{
         if(position_x > max_x || position_x < min_x || position_y > max_y || position_y < min_y){
-            throw new IllegalArgumentException("Out of bounds error!", null);
+            throw new IllegalStateException("Out of bounds error!", null);
         }
         if(friction < 0 || friction >= 1){
-            throw new IllegalArgumentException("Error, 0 < Friction <= 1 not met.", null);
+            throw new IllegalStateException("Error, 0 < Friction <= 1 not met.", null);
         }
         this.position_x = position_x;
         this.position_y = position_y;
@@ -55,7 +57,7 @@ public class Agent {
         checkRep();
     }
     private void checkRep() throws ExecutionException{
-        if(true){//turn on when debugging and turn off otherwise
+        if(DEBUG){//turn on when debugging and turn off otherwise
             if(position_x == Double.NaN || position_y == Double.NaN ||
             max_x == Double.NaN || min_x == Double.NaN || max_y == Double.NaN
             || min_y == Double.NaN || velocity_x == Double.NaN ||
@@ -138,7 +140,7 @@ public class Agent {
 
         double hypotenus = Math.pow(x_V*x_V+y_V*y_V,.5);
         //If we are close enough or there then stop
-        if(hypotenus < 5){
+        if(hypotenus != 0){
             return;
         }
         // Increment and normalize velocities
