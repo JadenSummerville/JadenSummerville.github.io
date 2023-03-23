@@ -1,4 +1,11 @@
 #agent{
+    height: 30px;
+    width: 30px;
+    position: absolute;
+    bottom: 100px;
+    z-index: 1;
+}
+#cheese{
     height: 40px;
     width: 40px;
     position: absolute;

@@ -275,7 +275,7 @@ class LineSegment {
       this.checkRep();
     }
     checkRep(){
-      if(true){
+      if(false){
         for(const key of this.coordinates.keys()){
           if(!typeof key === 'string'){
             throw new Error("Non-string key");
@@ -529,7 +529,7 @@ lineOfSight(point1, point2) {
 
 class SuperAgent {
   constructor() {
-    this.agent = new Agent(150, 150, 1000, 0, 1000, 0, 0.5, 1);
+    this.agent = new Agent(150, 150, 10000, 0, 10000, 0, 0.5, 1);
     this.path = null;
 
     const lines = [
@@ -585,10 +585,13 @@ class SuperAgent {
     return [this.agent.position_x, this.agent.position_y];
   }
 }
-const agent = new Agent(2000*Math.random(), 500*Math.random(), 2000, 0, 500, 0, 0.99, 2);
+document.addEventListener("click", function(event) {
+  var canvas = document.getElementById("myCanvas");
+a.goTo([event.clientX-canvas.offsetLeft,event.clientY-canvas.offsetTop]);
 
-let aimX =2000*Math.random();
-let aimY = 500*Math.random();
+document.getElementById("cheese").style.top = event.clientY-10+"px";
+document.getElementById("cheese").style.left = event.clientX-10+"px";
+});
 function steps(){
     var canvas = document.getElementById("myCanvas");
     a.move();
@@ -602,8 +605,10 @@ const target = [2.0, 6.0];
 a.goTo(target);
 a.draw();
 
+var canvas = document.getElementById("myCanvas");
+document.getElementById("cheese").style.top = canvas.offsetTop+"px";
+document.getElementById("cheese").style.left = canvas.offsetLeft+"px";
+
 const interval = setInterval(function() {
     steps();
   }, 1);
-
-  const lines = [[0.51, 1.0], [0.5, 0.01]];
