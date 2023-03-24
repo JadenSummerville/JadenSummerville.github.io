@@ -1,3 +1,9 @@
+function rotateImage(x, y, imageId) {
+  var img = document.getElementById(imageId);
+  var angle = Math.atan2(x, y) * 180 / Math.PI;
+  console.log(angle);
+  img.style.transform = "rotate(" + angle + "deg)";
+}
 function drawLine(x1, y1, x2, y2) {
     var canvas = document.getElementById('myCanvas');
     var ctx = canvas.getContext('2d');
@@ -157,6 +163,9 @@ class LineSegment {
         this.correct();
         this.velocity_x *= this.friction;
         this.velocity_y *= this.friction;
+        if(this.velocity_x != 0 && this.velocity_y != 0){
+          rotateImage(this.velocity_x, -this.velocity_y,"agent");
+        }
     }
 
     frictionMove(velocity) {
@@ -322,7 +331,6 @@ class LineSegment {
       return goal;
     }
     FindPath(start, end) {
-      console.dir(this.coordinates);
       this.checkRep();
       if (!this.coordinates.has(start.join(',')) || !this.coordinates.has(end.join(','))) {
         throw new Error("Nodes not present in graph!");
@@ -341,7 +349,6 @@ class LineSegment {
       while (!queue.isEmpty()) {
         // Get the node with the highest priority (i.e. the node with the smallest distance from the start)
         const current = queue.dequeue().element.split(',').map(Number);
-        console.log(current+" dequeued");
         // If we've reached the end node, we're done
         if (current[0] === end[0] && current[1] === end[1]) {
           // Reconstruct the shortest path by following the previous pointers from the end to the start
@@ -366,7 +373,6 @@ class LineSegment {
             if (!distances.hasOwnProperty(child) || distance < distances[child]) {
               distances[child] = distance;
               previous[child] = current;
-              console.log(child+" enqueued with priority "+distance+" from "+current+" "+distances[current.join(',')]);
               queue.enqueue(child.join(','), distance);
             }
           }
@@ -590,9 +596,6 @@ class SuperAgent {
   }
 }
 document.addEventListener("click", function(event) {
-  console.log("");
-  console.log("");
-  console.log("");
   var canvas = document.getElementById("myCanvas");
 a.goTo([event.clientX-canvas.offsetLeft,event.clientY-canvas.offsetTop]);
 
