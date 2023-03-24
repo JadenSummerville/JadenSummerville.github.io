@@ -542,15 +542,17 @@ class SuperAgent {
       [59.5, 500.01],[59.5,100],[1000,100]
     ];
 
-    const point1 = [50, 50];
-    const point2 = [1, 0];
-    const point3 = [59, 250];
-    const point4 = [10, 0];
-    const point5 = [1101, 150];
-    const point6 = [1100, 50];
+    const point1 = [40, 40];
+    const point2 = [100, 250];
+    const point3 = [19, 250];
+    //const point4 = [10, 0];
+    const point4 = [1101, 150];
+    const point5 = [1100, 50];
+    const point6 = [20, 520];
+    const point7 = [100, 520];
     const startPoint = [-10.1, 0.5];
     const endPoint = [1.1, 0.3];
-    const nodes = [point1, point2, point3, point5, point4, point6];
+    const nodes = [point1, point2, point3, point5, point4, point6, point7];
 
     this.graph = new TwoWayGraph(lines, nodes);
   }
