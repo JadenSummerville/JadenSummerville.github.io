@@ -29,6 +29,9 @@ class LineSegment {
       }
       this.head = start.slice();
       this.tail = end.slice();
+      if(this.head[0]==this.tail[0]){
+        this.head[0]+0.1;
+      }
     }
   
     static collision(lineA, lineB) {
@@ -319,6 +322,7 @@ class LineSegment {
       return goal;
     }
     FindPath(start, end) {
+      console.dir(this.coordinates);
       this.checkRep();
       if (!this.coordinates.has(start.join(',')) || !this.coordinates.has(end.join(','))) {
         throw new Error("Nodes not present in graph!");
@@ -330,7 +334,6 @@ class LineSegment {
     
       // Add the starting node to the queue with a priority of 0
       queue.enqueue(start.join(','), 0);
-    
       // Keep track of the previous node for each node, so we can reconstruct the shortest path at the end
       const previous = {};
     
@@ -338,7 +341,7 @@ class LineSegment {
       while (!queue.isEmpty()) {
         // Get the node with the highest priority (i.e. the node with the smallest distance from the start)
         const current = queue.dequeue().element.split(',').map(Number);
-    
+        console.log(current+" dequeued");
         // If we've reached the end node, we're done
         if (current[0] === end[0] && current[1] === end[1]) {
           // Reconstruct the shortest path by following the previous pointers from the end to the start
@@ -363,6 +366,7 @@ class LineSegment {
             if (!distances.hasOwnProperty(child) || distance < distances[child]) {
               distances[child] = distance;
               previous[child] = current;
+              console.log(child+" enqueued with priority "+distance+" from "+current+" "+distances[current.join(',')]);
               queue.enqueue(child.join(','), distance);
             }
           }
@@ -538,14 +542,15 @@ class SuperAgent {
       [59.5, 500.01],[59.5,100],[1000,100]
     ];
 
-    const point1 = [0, 0];
+    const point1 = [50, 50];
     const point2 = [1, 0];
     const point3 = [59, 250];
     const point4 = [10, 0];
-    const point5 = [-10, 0.5];
+    const point5 = [1101, 150];
+    const point6 = [1100, 50];
     const startPoint = [-10.1, 0.5];
     const endPoint = [1.1, 0.3];
-    const nodes = [point1, point2, point3, point5, point4];
+    const nodes = [point1, point2, point3, point5, point4, point6];
 
     this.graph = new TwoWayGraph(lines, nodes);
   }
@@ -586,6 +591,9 @@ class SuperAgent {
   }
 }
 document.addEventListener("click", function(event) {
+  console.log("");
+  console.log("");
+  console.log("");
   var canvas = document.getElementById("myCanvas");
 a.goTo([event.clientX-canvas.offsetLeft,event.clientY-canvas.offsetTop]);
 
