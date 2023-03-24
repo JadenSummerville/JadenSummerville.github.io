@@ -533,7 +533,7 @@ lineOfSight(point1, point2) {
 
 class SuperAgent {
   constructor() {
-    this.agent = new Agent(150, 150, 10000, 0, 10000, 0, 0.5, 1);
+    this.agent = new Agent(150, 150, 10000, 0, 10000, 0, 0.95, 1);
     this.path = null;
 
     const lines = [
@@ -545,14 +545,11 @@ class SuperAgent {
     const point1 = [40, 40];
     const point2 = [100, 250];
     const point3 = [19, 250];
-    //const point4 = [10, 0];
     const point4 = [1101, 150];
     const point5 = [1100, 50];
     const point6 = [20, 520];
     const point7 = [100, 520];
-    const startPoint = [-10.1, 0.5];
-    const endPoint = [1.1, 0.3];
-    const nodes = [point1, point2, point3, point5, point4, point6, point7];
+    const nodes = [point1, point2, point3, point4, point5, point6, point7];
 
     this.graph = new TwoWayGraph(lines, nodes);
   }
@@ -579,7 +576,7 @@ class SuperAgent {
     const point2 = this.at();
     const distance = new LineSegment(point, point2);
 
-    if (distance.magnitude() < 5) {
+    if (distance.magnitude() < 25) {
       this.path.shift();
     }
 
