@@ -568,11 +568,11 @@ class SuperAgent {
       [491,188],[490,100]
     ];
 
-    const point1 = [40, 40];
+    const point1 = [40, 60];
     const point2 = [100, 250];
     const point3 = [19, 250];
-    const point4 = [1101, 150];
-    const point5 = [1100, 50];
+    const point4 = [1041, 120];
+    const point5 = [1040, 70];
     const point6 = [20, 520];
     const point7 = [100, 520];
     const point8 = [180, 420];
@@ -587,14 +587,14 @@ class SuperAgent {
     const point17 = [291, 170];
     const point18 = [380, 377];
     const point19 = [386, 439];
-    const point20 = [334, 295];
+    //const point20 = [334, 295];
     const point21 = [684, 450];
     const point22 = [536, 445];
     const point23 = [633,302];
     const point24 = [632,150];
     const point25 = [671,302];
     const nodes = [point1, point2, point3, point4, point5, point6, point7, point8, point9, point10, point11, point12, point13
-    , point14, point15, point16, point17, point18, point19, point20, point21, point22, point23, point24, point25];
+    , point14, point15, point16, point17, point18, point19, point21, point22, point23, point24, point25];
 
     this.graph = new TwoWayGraph(lines, nodes);
   }
