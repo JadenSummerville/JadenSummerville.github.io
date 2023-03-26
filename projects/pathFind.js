@@ -1,3 +1,13 @@
+function drawDot(canvasId, x, y) {
+  // Get the canvas element
+  const canvas = document.getElementById(canvasId);
+  // Get the 2D context of the canvas
+  const ctx = canvas.getContext("2d");
+  // Set the color of the dot
+  ctx.fillStyle = "red";
+  // Draw a small dot at the given coordinates
+  ctx.fillRect(x, y, 3, 3);
+}
 function rotateImage(x, y, imageId) {
   var img = document.getElementById(imageId);
   var angle = Math.atan2(x, y) * 180 / Math.PI;
@@ -422,8 +432,14 @@ class LineSegment {
     };
     data.sort(distanceComparator);
   }
-  draw() {
+  draw(debug) {
     this.obstacles.draw();
+    if(debug){
+      for(const coord of this.coordinates.keys()){
+        var nums = coord.split(",").map(Number);
+        drawDot("myCanvas", nums[0], nums[1]);
+      }
+    }
   }
   static doubleArrayToArrayList(original) {
     const goal = [];
@@ -543,9 +559,12 @@ class SuperAgent {
     this.path = null;
 
     const lines = [
-      [59, 200],
-      [59.5, 100.01],[59, 300],
-      [59.5, 500.01],[59.5,100],[1000,100]
+      [59, 200],[59.5, 100.01],[59, 300],[59.5, 500.01],
+      [59.5,100],[1000,100],[200,600],[201,450],[201,450],[351,450],[350,600],[351,450],
+      [200,380],[351,350],[200,320],[301,300],[351,350],[380,250],[300,300],[330,200],
+      [612,180],[330,200],[401,350],[430,250],[430,250],[570,239],
+      [612,180],[611,380],[570,239],[571,420],[571,420],[651,420],[651,420],[650,320],
+      [491,188],[490,100]
     ];
 
     const point1 = [40, 40];
@@ -555,7 +574,26 @@ class SuperAgent {
     const point5 = [1100, 50];
     const point6 = [20, 520];
     const point7 = [100, 520];
-    const nodes = [point1, point2, point3, point4, point5, point6, point7];
+    const point8 = [180, 420];
+    const point9 = [176, 355];
+    const point10 = [326, 324];
+    const point11 = [355, 230];
+    const point12 = [409, 225];
+    const point13 = [592, 213];
+    const point14 = [595, 399];
+    const point15 = [630, 400];
+    const point16 = [166, 300];
+    const point17 = [291, 170];
+    const point18 = [380, 377];
+    const point19 = [386, 439];
+    const point20 = [334, 295];
+    const point21 = [684, 450];
+    const point22 = [536, 445];
+    const point23 = [633,302];
+    const point24 = [632,150];
+    const point25 = [671,302];
+    const nodes = [point1, point2, point3, point4, point5, point6, point7, point8, point9, point10, point11, point12, point13
+    , point14, point15, point16, point17, point18, point19, point20, point21, point22, point23, point24, point25];
 
     this.graph = new TwoWayGraph(lines, nodes);
   }
@@ -565,8 +603,8 @@ class SuperAgent {
     this.path = this.graph.PathFind(start, target);
   }
 
-  draw() {
-    this.graph.draw();
+  draw(debug) {
+    this.graph.draw(debug);
   }
 
   move() {
@@ -599,6 +637,10 @@ document.addEventListener("click", function(event) {
   var canvas = document.getElementById("myCanvas");
 a.goTo([event.clientX-canvas.offsetLeft,event.clientY-canvas.offsetTop]);
 
+if(true){
+  alert((event.clientX-canvas.offsetLeft)+","+(event.clientY-canvas.offsetTop));
+}
+
 document.getElementById("cheese").style.top = event.clientY-10+"px";
 document.getElementById("cheese").style.left = event.clientX-10+"px";
 });
@@ -613,7 +655,7 @@ function steps(){
 const a = new SuperAgent();
 const target = [2.0, 6.0];
 a.goTo(target);
-a.draw();
+a.draw(true);
 
 var canvas = document.getElementById("myCanvas");
 document.getElementById("cheese").style.top = canvas.offsetTop+"px";
