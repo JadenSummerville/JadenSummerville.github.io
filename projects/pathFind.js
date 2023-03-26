@@ -1,3 +1,4 @@
+let debug = false;
 function drawDot(canvasId, x, y) {
   // Get the canvas element
   const canvas = document.getElementById(canvasId);
@@ -637,7 +638,7 @@ document.addEventListener("click", function(event) {
   var canvas = document.getElementById("myCanvas");
 a.goTo([event.clientX-canvas.offsetLeft,event.clientY-canvas.offsetTop]);
 
-if(true){
+if(debug){
   alert((event.clientX-canvas.offsetLeft)+","+(event.clientY-canvas.offsetTop));
 }
 
@@ -655,7 +656,7 @@ function steps(){
 const a = new SuperAgent();
 const target = [2.0, 6.0];
 a.goTo(target);
-a.draw(true);
+a.draw(debug);
 
 var canvas = document.getElementById("myCanvas");
 document.getElementById("cheese").style.top = canvas.offsetTop+"px";
