@@ -584,7 +584,7 @@ class SuperAgent {
     const point14 = [595, 399];
     const point15 = [630, 400];
     const point16 = [166, 300];
-    const point17 = [291, 170];
+    const point17 = [331, 170];
     const point18 = [380, 377];
     const point19 = [386, 439];
     //const point20 = [334, 295];
